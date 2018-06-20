@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import BarChart from './components/charts/BarChart';
+import HorizontalBarChart from './components/charts/HorizontalBarChart';
 
 class App extends Component {
   render() {
