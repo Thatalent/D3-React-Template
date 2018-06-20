@@ -61,7 +61,6 @@ class BarChart extends Component {
   }
 
   updateScales() {
-    const graph = d3Graph;
     const dataYMax = d3.max(this.yList);
     yScale = d3.scaleLinear()
       .domain([0, dataYMax])
