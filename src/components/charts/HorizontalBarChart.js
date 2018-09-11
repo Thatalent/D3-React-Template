@@ -63,7 +63,6 @@ class HorizontalBarChart extends React.Component {
   }
 
   updateScales() {
-    // const graph = d3Graph;
     const dataYMax = d3.max(this.yList);
     yScale = d3.scaleLinear()
       .domain([0, dataYMax])
@@ -101,6 +100,21 @@ class HorizontalBarChart extends React.Component {
         .attr("height", 0);
 
       bars.transition()
+        .ease(d3.easeBounce)
+        .duration(1000)
+        .delay((d, i) => { return i * 100; })
+        .attr("width", (d) => { return yScale(accessY(d)) });
+    // }
+    // else if (orientation === 'vertical') {
+      bars.transition()
+        .duration(1000)
+        .delay((d, i) => { return i * 100 + 1000; })
+        .attr("x", (d) => { return scaleBand(accessX(d)) })
+        .attr("y", (height))
+        .attr('width', scaleBand.bandwidth())
+        .attr("height", 0);
+
+      bars.transition()
         .duration(1000)
         .delay((d, i) => { return i * 100; })
         .attr("width", (d) => { return yScale(accessY(d)) });
@@ -122,14 +136,14 @@ class HorizontalBarChart extends React.Component {
 
       var newYAxis = d3.axisLeft(yScale.range([height, 0]));
 
-      var yaxis = d3.select(".yaxis")
+      d3.select(".yaxis")
         .transition()
         .duration(500)
         .delay((d) => { return 1000; })
         .call(newYAxis);
 
       var newXAxis = d3.axisBottom(xScale);
-      var xaxis = d3.select(".xaxis")
+      d3.select(".xaxis")
         .transition()
         .duration(500)
         .delay((d) => { return 1000; })

@@ -12,7 +12,8 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <BarChart data={[{x: 1, y: 5}, {x: 2, y: 10}, {x: 3, y: 7}, { x: 5, y: 8 }]} width={500}/>
+        <BarChart data={[{x: 1, y: 5}, {x: 2, y: 10}, {x: 3, y: 7}, { x: 5, y: 8 }]} width={400}/>
+        <HorizontalBarChart data={[{x: 1, y: 5}, {x: 2, y: 10}, {x: 3, y: 7}, { x: 5, y: 8 }]} width={500} orientation={'horizontal'}/>
       </div>
     );
   }
