@@ -2,6 +2,8 @@ import * as d3 from "d3";
 import React, { Component } from 'react';
 import LineTools from '../../utlis/LineTools.js';
 import { interpolatePath } from 'd3-interpolate-path';
+import BaseChart from "./BaseChart.js";
+
 
 var width = 500;
 var height = 500;
@@ -20,7 +22,7 @@ var yAxisSettings = { type:"linear", position: "left", direction: "top", ticks: 
 var curveSettings = { type:"linear"}
 var animatationSettings = { duration: 1000, delay: "series"};
 
-class LineChart extends Component {
+class LineChart extends BaseChart {
 
   constructor(props){
      super(props);
@@ -57,48 +59,31 @@ class LineChart extends Component {
     return axisSettings;
   }
 
-  componentDidMount() {
-    d3Graph = d3.select(this.graph.current)
-    .attr("transform", "translate(" + padding.left + "," + padding.top + ")");
+  updateChart(){
+    this.updatePath();
+    this.updateLineChart();
+
+  }
+
+  createChart(){
     this.createLineChart();
+
+    this.updateLineChart();
   }
 
   createLineChart() {
 
-    const graph = d3Graph;
-    this.updateScales();
+    this.createScales();
 
-    xAxis = LineTools.createAxis(this.xScale, this.xAxisSettings.position, this.xAxisSettings.direction);
-    yAxis = LineTools.createAxis(this.yScale, this.yAxisSettings.position, this.yAxisSettings.direction, this.yAxisSettings.ticks);
-
-    graph.append("g")
-        .attr("class","x axis")
-        .attr("transform","translate(0," + (height) + ")")
-        .call(xAxis);
-
-    graph.append("g")
-				.attr("class","y axis")
-                .call(yAxis);
+    this.createAxis();
                 
     this.starterData = LineTools.createStartData(this.yMin, this.xList);
     this.createPath(this.data, this.starterData);
-    this.updateLineChart();
-  }
-
-  updateScales() {
-
-    const dataYMax = d3.max(this.yList);
-
-    this.yMin = 0;
-
-    this.yScale = LineTools.createScale([this.yMin, dataYMax],[height, 0], this.yAxisSettings);
-
-    this.xScale = LineTools.createScale(this.xList, [0,width], this.xAxisSettings);
   }
 
   createPath(data, starterData){
 
-    const graph = d3Graph;
+    const graph = this.d3Graph;
     const xScale = this.xScale;
     const yScale = this.yScale;
     const accessX = this.accessX;
@@ -122,6 +107,11 @@ class LineChart extends Component {
         .delay(200)
         // .ease(d3.easeBounce)
         .attr("stroke-dashoffset", 0);
+
+    // path.transition()        .duration(1000)
+
+    // .delay(1200).attr("stroke-dasharray", 0);
+
      
         var points = graph.selectAll(".dot")
         .data(data)
@@ -140,52 +130,107 @@ class LineChart extends Component {
 
   }
 
+  updatePath(){
+
+    let data = this.data;
+    const graph = this.d3Graph;
+    const xScale = this.xScale;
+    const yScale = this.yScale;
+    const accessX = this.accessX;
+    const accessY = this.accessY;
+    let lineGenerator = this.lineGenerator;
+    LineTools.updateLineGenerator(lineGenerator, xScale, yScale, null, accessX, accessY, this.curveSettings);
+
+
+    let path = graph.append('path')
+        .attr("stroke", color(1))
+        .attr("fill", "none")
+        .attr("class", "line") // Assign a class for styling 
+        .attr("d", lineGenerator(data)) // Calls the line generator 
+
+    var totalLength = path.node().getTotalLength();
+
+    path.remove();
+
+    path  = graph.select('path.line');
+
+    let previousLength = path.node().getTotalLength();
+
+    let points = graph.selectAll(".dot");
+
+    points.transition()
+    .duration(200)
+    .delay((d,i)=>{
+      return 200*(data.length-i);
+    })
+    .attr("r", (d, i) => { return i === 0 ? 2 : 0;});
+
+    let dataPoints = points.data(data);
+
+    dataPoints.enter().append("circle") // Uses the enter().append() method
+        .attr("class", "dot") // Assign a class for styling
+        .attr("cx", function(d) { return xScale(accessX(d)) + (xScale.bandwidth()/2); })
+        .attr("cy", function(d) { return yScale(accessY(d)); })
+        .attr('fill', color(1))
+        .attr("r", 0);
+
+
+
+    dataPoints.exit().transition()
+      .duration(200)
+      .delay(200*(data.length+1))
+      .attr("cx", function(d) { return xScale(accessX(data[0])) + (xScale.bandwidth()/2); })
+      .attr("cy", function(d) { return yScale(accessY(data[0])); })
+      .remove();
+
+    path.transition()
+      .duration(200*data.length)
+      .attr("stroke-dashoffset", totalLength)
+      .attr("stroke-dasharray", totalLength + " " + (totalLength >= previousLength ? totalLength : previousLength));
+
+    path.transition()
+      .delay(200*(data.length + 1))
+      // .duration(200*data.length)
+      .attrTween('d', function(d) {
+      
+        var previous = d3.select(this).attr('d');
+        var current = lineGenerator(data);
+        return interpolatePath(previous, current);
+      });
+
+    path.transition()
+      .delay(200*(data.length + 3))
+      .duration(200*data.length)
+      .attr("stroke-dashoffset", 0);
+
+    points.transition()
+      .duration(200)
+      .delay(200*(data.length+1))
+      // .ease(d3.easeBounce)
+      .attr("cx", function(d, i) { return xScale(accessX(d)) + (xScale.bandwidth()/2); })
+      .attr("cy", function(d, i) { return yScale(accessY(d)); });
+
+      points.transition()
+      .duration(200)
+      .delay((d, i) => { return 200*(data.length + i+ 2); })
+      .ease(d3.easeBounce)
+      .attr("r", 2);
+  }
+
   updateLineChart(){
 
-      const graph = d3Graph;
+      const graph = this.d3Graph;
       const xScale = this.xScale;
       const yScale = this.yScale;
       const accessX = this.accessX;
       const accessY = this.accessY;
       const lineGenerator = this.lineGenerator;
-
-      graph.select(".line").datum(this.data).enter().transition()
-      .duration(1000)
-      .delay((d,i) => { return i*500})
-      ;
       LineTools.updateLineGenerator(lineGenerator, xScale, yScale, null, accessX, accessY, this.curveSettings);
-      
 
+      // graph.select(".line").datum(this.data).enter().transition()
+      // .duration(1000)
+      // .delay((d,i) => { return i*500});
     }
-
-  getListOfY(data) {
-    return this.getDataArray(data, "y");
-  }
-
-  getListOfX (data) {
-    return this.getDataArray(data, "x");
-  }
-
-  getDataArray (data, value) {
-    var accessor = (dataValue) => {return dataValue};
-    if (value === "y") {
-      accessor = this.accessY;
-    }
-    if (value === "x") {
-      accessor = this.accessX;
-    }
-    return data.map((dataObject) => accessor(dataObject));
-  }
-
-  updateGraph(selection) {
-    selection.selectAll('.rect')
-      .call(this.updateRect);
-  }
-
-  updateRect (selection) {
-    selection.attr('x', this.accessX.bind(this))
-    .attr('y', accessY);
-  }
 
   render() {
   return (

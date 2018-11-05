@@ -84,7 +84,7 @@ export default {
             newCurve.type = newCurve.type.alpha(curve.alpha);
         }
         else if(curve.beta){
-            newCurve.type = newCurve.type.beat(curve.beta);
+            newCurve.type = newCurve.type.beta(curve.beta);
         }
         else if(curve.tension){
             newCurve.type = newCurve.type.tension(curve.tension);
