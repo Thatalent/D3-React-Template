@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import React, { Component } from 'react';
-import BarTools from '../../utlis/BarTools.js';
+import BarTools from '../../utils/BarTools.js';
 import BaseChart from './BaseChart';
 
 

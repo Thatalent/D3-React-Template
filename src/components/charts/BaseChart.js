@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import React, { Component } from 'react';
-import ChartTools from '../../utlis/ChartTools.js';
+import ChartTools from '../../utils/ChartTools.js';
 
 var width = 500;
 var height = 500;

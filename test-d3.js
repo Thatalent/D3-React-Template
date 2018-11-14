@@ -1,6 +1,6 @@
 var d3 =  require("d3");
 var { JSDOM } = require("jsdom");
-var BarTools = require("/Users/jdhudson/code/d3-react-template/src/utlis/BarTools.js");
+var BarTools = require("/Users/jdhudson/code/d3-react-template/src/utils/BarTools.js");
 var fs = require('fs');
 
 var outputLocation = "test.html";

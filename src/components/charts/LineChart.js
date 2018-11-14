@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import React, { Component } from 'react';
-import LineTools from '../../utlis/LineTools.js';
+import LineTools from '../../utils/LineTools.js';
 import { interpolatePath } from 'd3-interpolate-path';
 import BaseChart from "./BaseChart.js";
 
