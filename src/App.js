@@ -3,6 +3,8 @@ import logo from './logo.svg';
 import './App.css';
 import LineChart from './components/charts/LineChart';
 import BarChart from './components/charts/BarChart';
+import PieChart from './components/charts/PieChart';
+
 
 
 class App extends Component {
@@ -61,8 +63,9 @@ class App extends Component {
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
         </header>
-        <BarChart data={this.state.data} width={500} yAxisSettings={{position:"left"}}/>
+        <BarChart data={this.state.data} yAxisSettings={{position:"left"}}/>
         <LineChart data={this.state.data} width={500} yAxisSettings={{position:"left"}}/>
+        <PieChart data={this.state.data} width={500} yAxisSettings={{position:"left"}}/>
         <div>
         <label>Use custom input
           <input type='checkbox' checked={customData} name="customData" onChange={this.handleInputChange}/>
