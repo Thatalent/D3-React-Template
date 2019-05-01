@@ -1,3 +1,5 @@
+//Created by Jonathan Hudson for DoL 242. Github username Thatalent
+
 import * as d3 from "d3";
 import React, { Component } from 'react';
 import LineTools from '../../utlis/LineTools.js';
