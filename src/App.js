@@ -1,3 +1,5 @@
+//Created by Jonathan Hudson for DoL 242. Github username Thatalent
+
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
